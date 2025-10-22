@@ -4,106 +4,107 @@ from telegram.ext import (
     ContextTypes, ConversationHandler
 )
 
-# === Этапы диалога ===
+# === ГќГІГ ГЇГ» Г¤ГЁГ Г«Г®ГЈГ  ===
 AMERICANO, CAPPUCCINO, FLATWHITE, TO_KITCHEN, FROM_KITCHEN = range(5)
 
-# === Старт ===
+# === Г‘ГІГ Г°ГІ ===
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Привет! Давай посчитаем кофе ?\nСколько американо?"
+        "ГЏГ°ГЁГўГҐГІ! Г„Г ГўГ Г© ГЇГ®Г±Г·ГЁГІГ ГҐГ¬ ГЄГ®ГґГҐ ?\nГ‘ГЄГ®Г«ГјГЄГ® Г Г¬ГҐГ°ГЁГЄГ Г­Г®?"
     )
     return AMERICANO
 
-# === Вопрос 1 ===
+# === Г‚Г®ГЇГ°Г®Г± 1 ===
 async def americano(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["americano"] = update.message.text
-    await update.message.reply_text("Сколько капучино?")
+    await update.message.reply_text("Г‘ГЄГ®Г«ГјГЄГ® ГЄГ ГЇГіГ·ГЁГ­Г®?")
     return CAPPUCCINO
 
-# === Вопрос 2 ===
+# === Г‚Г®ГЇГ°Г®Г± 2 ===
 async def cappuccino(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["cappuccino"] = update.message.text
-    await update.message.reply_text("Сколько флетвайт?")
+    await update.message.reply_text("Г‘ГЄГ®Г«ГјГЄГ® ГґГ«ГҐГІГўГ Г©ГІ?")
     return FLATWHITE
 
-# === Вопрос 3 ===
+# === Г‚Г®ГЇГ°Г®Г± 3 ===
 async def flatwhite(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["flatwhite"] = update.message.text
-    skip_button = [[KeyboardButton("Пропустить ??")]]
+    skip_button = [[KeyboardButton("ГЏГ°Г®ГЇГіГ±ГІГЁГІГј ??")]]
     await update.message.reply_text(
-        "Что передавалось на кухню?",
+        "Г—ГІГ® ГЇГҐГ°ГҐГ¤Г ГўГ Г«Г®Г±Гј Г­Г  ГЄГіГµГ­Гѕ?",
         reply_markup=ReplyKeyboardMarkup(skip_button, one_time_keyboard=True, resize_keyboard=True)
     )
     return TO_KITCHEN
 
-# === Вопрос 4 ===
+# === Г‚Г®ГЇГ°Г®Г± 4 ===
 async def to_kitchen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    context.user_data["to_kitchen"] = None if text == "Пропустить ??" else text
+    context.user_data["to_kitchen"] = None if text == "ГЏГ°Г®ГЇГіГ±ГІГЁГІГј ??" else text
 
-    skip_button = [[KeyboardButton("Пропустить ??")]]
+    skip_button = [[KeyboardButton("ГЏГ°Г®ГЇГіГ±ГІГЁГІГј ??")]]
     await update.message.reply_text(
-        "Что брали с кухни?",
+        "Г—ГІГ® ГЎГ°Г Г«ГЁ Г± ГЄГіГµГ­ГЁ?",
         reply_markup=ReplyKeyboardMarkup(skip_button, one_time_keyboard=True, resize_keyboard=True)
     )
     return FROM_KITCHEN
 
-# === Вопрос 5 и Итоги ===
+# === Г‚Г®ГЇГ°Г®Г± 5 ГЁ Г€ГІГ®ГЈГЁ ===
 async def from_kitchen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    context.user_data["from_kitchen"] = None if text == "Пропустить ??" else text
+    context.user_data["from_kitchen"] = None if text == "ГЏГ°Г®ГЇГіГ±ГІГЁГІГј ??" else text
 
-    # === Подсчёт ===
+    # === ГЏГ®Г¤Г±Г·ВёГІ ===
     try:
         americano = int(context.user_data.get("americano", 0))
         cappuccino = int(context.user_data.get("cappuccino", 0))
         flatwhite = int(context.user_data.get("flatwhite", 0))
     except ValueError:
-        await update.message.reply_text("Ошибка: нужно вводить только цифры ?")
+        await update.message.reply_text("ГЋГёГЁГЎГЄГ : Г­ГіГ¦Г­Г® ГўГўГ®Г¤ГЁГІГј ГІГ®Г«ГјГЄГ® Г¶ГЁГґГ°Г» ?")
         return ConversationHandler.END
 
     total_coffee = americano + cappuccino + flatwhite
 
-    # === Расчёт молока ===
+    # === ГђГ Г±Г·ВёГІ Г¬Г®Г«Г®ГЄГ  ===
     milk_total = cappuccino * 150 + flatwhite * 120
 
-    # === Формирование результата ===
-    result = f"? Кофе штат: {total_coffee} шт.\n"
-    result += f"?? Молоко: {milk_total} мл\n"
+    # === Г”Г®Г°Г¬ГЁГ°Г®ГўГ Г­ГЁГҐ Г°ГҐГ§ГіГ«ГјГІГ ГІГ  ===
+    result = f"? ГЉГ®ГґГҐ ГёГІГ ГІ: {total_coffee} ГёГІ.\n"
+    result += f"?? ГЊГ®Г«Г®ГЄГ®: {milk_total} Г¬Г«\n"
 
     if context.user_data.get("to_kitchen"):
-        result += f"?? Перемещение на кухню: {context.user_data['to_kitchen']}\n"
+        result += f"?? ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г  ГЄГіГµГ­Гѕ: {context.user_data['to_kitchen']}\n"
         if context.user_data.get("from_kitchen"):
-            result += f"?? Перемещение на бар: {context.user_data['from_kitchen']}"
+            result += f"?? ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г  ГЎГ Г°: {context.user_data['from_kitchen']}"
     else:
-        result += f"?? Перемещение на бар: {context.user_data.get('from_kitchen', '-')}"
+        result += f"?? ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г  ГЎГ Г°: {context.user_data.get('from_kitchen', '-')}"
 
-    # === Кнопка "Начать заново" ===
-    restart_button = [[KeyboardButton("Начать заново ??")]]
+    # === ГЉГ­Г®ГЇГЄГ  "ГЌГ Г·Г ГІГј Г§Г Г­Г®ГўГ®" ===
+    restart_button = [[KeyboardButton("ГЌГ Г·Г ГІГј Г§Г Г­Г®ГўГ® ??")]]
     await update.message.reply_text(
         result,
         reply_markup=ReplyKeyboardMarkup(restart_button, one_time_keyboard=True, resize_keyboard=True)
     )
     return ConversationHandler.END
 
-# === Перезапуск ===
+# === ГЏГҐГ°ГҐГ§Г ГЇГіГ±ГЄ ===
 async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Просто запускаем сценарий с начала
+    # ГЏГ°Г®Г±ГІГ® Г§Г ГЇГіГ±ГЄГ ГҐГ¬ Г±Г¶ГҐГ­Г Г°ГЁГ© Г± Г­Г Г·Г Г«Г 
     return await start(update, context)
 
-# === Отмена ===
+# === ГЋГІГ¬ГҐГ­Г  ===
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Опрос отменён.")
+    await update.message.reply_text("ГЋГЇГ°Г®Г± Г®ГІГ¬ГҐГ­ВёГ­.")
     return ConversationHandler.END
 
-# === Основной запуск ===
+# === ГЋГ±Г­Г®ГўГ­Г®Г© Г§Г ГЇГіГ±ГЄ ===
 def main():
-    app = ApplicationBuilder().token("8170742318:AAGVoMuF4i6PLiLAYr0tErWag20fYAFyJqE").build()
+    import os
+app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
 
     conv = ConversationHandler(
         entry_points=[
             CommandHandler("start", start),
-            MessageHandler(filters.Regex("^Начать заново ??$"), restart)
+            MessageHandler(filters.Regex("^ГЌГ Г·Г ГІГј Г§Г Г­Г®ГўГ® ??$"), restart)
         ],
         states={
             AMERICANO: [MessageHandler(filters.TEXT & ~filters.COMMAND, americano)],
@@ -119,4 +120,5 @@ def main():
     app.run_polling()
 
 if __name__ == "__main__":
+
     main()
