@@ -99,7 +99,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # === Îñíîâíîé çàïóñê ===
 def main():
-app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
+    app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
 
 conv = ConversationHandler(
         entry_points=[
@@ -122,6 +122,7 @@ app.run_polling()
 if __name__ == "__main__":
 
     main()
+
 
 
 
