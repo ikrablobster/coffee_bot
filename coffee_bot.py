@@ -103,22 +103,22 @@ def main():
 
 
 conv = ConversationHandler(
-        entry_points=[
-            CommandHandler("start", start),
-            MessageHandler(filters.Regex("^Начать заново 🔁$"), restart)
-        ],
-        states={
-            AMERICANO: [MessageHandler(filters.TEXT & ~filters.COMMAND, americano)],
-            CAPPUCCINO: [MessageHandler(filters.TEXT & ~filters.COMMAND, cappuccino)],
-            FLATWHITE: [MessageHandler(filters.TEXT & ~filters.COMMAND, flatwhite)],
-            TO_KITCHEN: [MessageHandler(filters.TEXT & ~filters.COMMAND, to_kitchen)],
-            FROM_KITCHEN: [MessageHandler(filters.TEXT & ~filters.COMMAND, from_kitchen)],
-        },
-        fallbacks=[CommandHandler("cancel", cancel)],
+    entry_points=[
+        CommandHandler("start", start),
+        MessageHandler(filters.Regex("^Начать заново 🔁$"), restart)
+    ],
+    states={
+        AMERICANO: [MessageHandler(filters.TEXT & ~filters.COMMAND, americano)],
+        CAPPUCCINO: [MessageHandler(filters.TEXT & ~filters.COMMAND, cappuccino)],
+        FLATWHITE: [MessageHandler(filters.TEXT & ~filters.COMMAND, flatwhite)],
+        TO_KITCHEN: [MessageHandler(filters.TEXT & ~filters.COMMAND, to_kitchen)],
+        FROM_KITCHEN: [MessageHandler(filters.TEXT & ~filters.COMMAND, from_kitchen)],
+    },
+    fallbacks=[CommandHandler("cancel", cancel)],
     )
 
 app.add_handler(conv)
-    app.run_polling()
+app.run_polling()
 
 if __name__ == "__main__":
     main()
