@@ -18,94 +18,127 @@ def run_web():
 # === Этапы диалога ===
 AMERICANO, CAPPUCCINO, FLATWHITE, TO_KITCHEN, FROM_KITCHEN = range(5)
 
-# === Старт ===
+# Кнопки
+def base_keyboard():
+    return ReplyKeyboardMarkup(
+        [[KeyboardButton("Пропустить ⏭"), KeyboardButton("Перезапустить бота 🔁")]],
+        resize_keyboard=True
+    )
+
+# --- Старт ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Привет! Давай посчитаем кофе ☕\nСколько американо?"
+        "☕️ Давай просчитаем расход кофе и молока!\n\n"
+        "Сколько американо?",
+        reply_markup=base_keyboard()
     )
     return AMERICANO
 
-# === Вопрос 1 ===
+# --- 1. Американо ---
 async def americano(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data["americano"] = update.message.text
-    await update.message.reply_text("Сколько капучино?")
+    text = update.message.text
+
+    if text == "Пропустить ⏭":
+        context.user_data["americano"] = 0
+    elif text == "Перезапустить бота 🔁":
+        return await restart(update, context)
+    else:
+        context.user_data["americano"] = int(text)
+
+    await update.message.reply_text(
+        "Сколько капучино?",
+        reply_markup=base_keyboard()
+    )
     return CAPPUCCINO
 
-# === Вопрос 2 ===
+# --- 2. Капучино ---
 async def cappuccino(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data["cappuccino"] = update.message.text
-    await update.message.reply_text("Сколько флетвайт?")
+    text = update.message.text
+
+    if text == "Пропустить ⏭":
+        context.user_data["cappuccino"] = 0
+    elif text == "Перезапустить бота 🔁":
+        return await restart(update, context)
+    else:
+        context.user_data["cappuccino"] = int(text)
+
+    await update.message.reply_text(
+        "Сколько флетвайт?",
+        reply_markup=base_keyboard()
+    )
     return FLATWHITE
 
-# === Вопрос 3 ===
+# --- 3. Флетвайт ---
 async def flatwhite(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data["flatwhite"] = update.message.text
-    skip_button = [[KeyboardButton("Пропустить ➡️")]]
+    text = update.message.text
+
+    if text == "Пропустить ⏭":
+        context.user_data["flatwhite"] = 0
+    elif text == "Перезапустить бота 🔁":
+        return await restart(update, context)
+    else:
+        context.user_data["flatwhite"] = int(text)
+
     await update.message.reply_text(
         "Что передавалось на кухню?",
-        reply_markup=ReplyKeyboardMarkup(skip_button, one_time_keyboard=True, resize_keyboard=True)
+        reply_markup=base_keyboard()
     )
     return TO_KITCHEN
 
-# === Вопрос 4 ===
+# --- 4. На кухню ---
 async def to_kitchen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    context.user_data["to_kitchen"] = None if text == "Пропустить ➡️" else text
 
-    skip_button = [[KeyboardButton("Пропустить ➡️")]]
+    if text == "Пропустить ⏭":
+        context.user_data["to_kitchen"] = None
+    elif text == "Перезапустить бота 🔁":
+        return await restart(update, context)
+    else:
+        context.user_data["to_kitchen"] = text
+
     await update.message.reply_text(
-        "Что брали с кухни?",
-        reply_markup=ReplyKeyboardMarkup(skip_button, one_time_keyboard=True, resize_keyboard=True)
+        "Что бралось с кухни?",
+        reply_markup=base_keyboard()
     )
     return FROM_KITCHEN
 
-# === Вопрос 5 и Итоги ===
+# --- 5. С кухни ---
 async def from_kitchen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    context.user_data["from_kitchen"] = None if text == "Пропустить ➡️" else text
 
-    # === Подсчёт ===
-    try:
-        americano = int(context.user_data.get("americano", 0))
-        cappuccino = int(context.user_data.get("cappuccino", 0))
-        flatwhite = int(context.user_data.get("flatwhite", 0))
-    except ValueError:
-        await update.message.reply_text("Ошибка: нужно вводить только цифры ☕")
-        return ConversationHandler.END
+    if text == "Пропустить ⏭":
+        context.user_data["from_kitchen"] = None
+    elif text == "Перезапустить бота 🔁":
+        return await restart(update, context)
+    else:
+        context.user_data["from_kitchen"] = text
+
+    # --- Подсчёт ---
+    americano = context.user_data.get("americano", 0)
+    cappuccino = context.user_data.get("cappuccino", 0)
+    flatwhite = context.user_data.get("flatwhite", 0)
 
     total_coffee = americano + cappuccino + flatwhite
+    total_milk = cappuccino * 150 + flatwhite * 120
 
-    # === Расчёт молока ===
-    milk_total = cappuccino * 150 + flatwhite * 120
-
-    # === Формирование результата ===
-    result = f"☕ Кофе штат: {total_coffee} шт.\n"
-    result += f"🥛 Молоко: {milk_total} мл\n"
+    result = f"☕️ Кофе: {total_coffee} шт.\n🥛 Молоко: {total_milk} мл\n"
 
     if context.user_data.get("to_kitchen"):
-        result += f"🍳 Перемещение на кухню: {context.user_data['to_kitchen']}\n"
-        if context.user_data.get("from_kitchen"):
-            result += f"🍽 Перемещение на бар: {context.user_data['from_kitchen']}"
-    else:
-        result += f"🍽 Перемещение на бар: {context.user_data.get('from_kitchen', '-')}"
+        result += f"📦 Перемещение на кухню: {context.user_data['to_kitchen']}\n"
+    if context.user_data.get("from_kitchen"):
+        result += f"🍽 Перемещение на бар: {context.user_data['from_kitchen']}\n"
 
-    # === Кнопка "Начать заново" ===
-    restart_button = [[KeyboardButton("Начать заново 🔁")]]
-    await update.message.reply_text(
-        result,
-        reply_markup=ReplyKeyboardMarkup(restart_button, one_time_keyboard=True, resize_keyboard=True)
-    )
+    await update.message.reply_text(result, reply_markup=base_keyboard())
     return ConversationHandler.END
 
-# === Перезапуск ===
+# --- Перезапуск ---
 async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Просто запускаем сценарий с начала
-    return await start(update, context)
-
-# === Отмена ===
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Опрос отменён.")
-    return ConversationHandler.END
+    context.user_data.clear()
+    await update.message.reply_text(
+        "🔁 Начнём заново!\n\nСколько американо?",
+        reply_markup=base_keyboard()
+    )
+    return AMERICANO
 
 # === Основной запуск ===
 def main():
@@ -134,6 +167,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
