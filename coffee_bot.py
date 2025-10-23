@@ -117,8 +117,9 @@ conv = ConversationHandler(
         fallbacks=[CommandHandler("cancel", cancel)],
     )
 
-app.add_handler(conv)
-app.run_polling()
+    app.add_handler(conv)
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
+
