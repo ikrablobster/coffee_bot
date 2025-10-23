@@ -1,3 +1,4 @@
+from flask import Flask
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
@@ -116,10 +117,14 @@ def main():
     fallbacks=[CommandHandler("cancel", cancel)],
     )
 
+    # Запустить веб-сервер в отдельном потоке, чтобы Render увидел открытый порт
+    t = threading.Thread(target=run_web, daemon=True)
+    t.start()
     app.add_handler(conv)
     app.run_polling()
 
 if __name__ == "__main__":
     main()
+
 
 
