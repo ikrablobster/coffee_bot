@@ -102,7 +102,7 @@ def main():
     app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
 
 
-conv = ConversationHandler(
+    conv = ConversationHandler(
     entry_points=[
         CommandHandler("start", start),
         MessageHandler(filters.Regex("^Начать заново 🔁$"), restart)
@@ -117,8 +117,9 @@ conv = ConversationHandler(
     fallbacks=[CommandHandler("cancel", cancel)],
     )
 
-app.add_handler(conv)
-app.run_polling()
+    app.add_handler(conv)
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
+
