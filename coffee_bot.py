@@ -117,16 +117,13 @@ def main():
     },
     fallbacks=[CommandHandler("cancel", cancel)],
     )
-
+    
+    app.add_handler(conv)
     # Запустить веб-сервер в отдельном потоке, чтобы Render увидел открытый порт
     t = threading.Thread(target=run_web, daemon=True)
     t.start()
-    app.add_handler(conv)
     app.run_polling()
 
 if __name__ == "__main__":
     main()
-
-
-
 
