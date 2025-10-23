@@ -101,7 +101,7 @@ def main():
     import os
 app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
 
-    conv = ConversationHandler(
+conv = ConversationHandler(
         entry_points=[
             CommandHandler("start", start),
             MessageHandler(filters.Regex("^Íà÷àòü çàíîâî ??$"), restart)
@@ -122,3 +122,4 @@ app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
 if __name__ == "__main__":
 
     main()
+
