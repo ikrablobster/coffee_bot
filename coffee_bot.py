@@ -156,7 +156,7 @@ def main():
         TO_KITCHEN: [MessageHandler(filters.TEXT & ~filters.COMMAND, to_kitchen)],
         FROM_KITCHEN: [MessageHandler(filters.TEXT & ~filters.COMMAND, from_kitchen)],
     },
-    fallbacks=[CommandHandler("cancel", cancel)],
+    fallbacks=[CommandHandler("start", start)],
     )
     
     # Запустить веб-сервер в отдельном потоке, чтобы Render увидел открытый порт
@@ -167,6 +167,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
