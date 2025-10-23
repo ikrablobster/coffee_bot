@@ -6,6 +6,14 @@ from telegram.ext import (
     ContextTypes, ConversationHandler
 )
 
+def run_web():
+    app = Flask("keepalive")
+    @app.route("/")
+    def index():
+        return "ok"
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
+
 # === Этапы диалога ===
 AMERICANO, CAPPUCCINO, FLATWHITE, TO_KITCHEN, FROM_KITCHEN = range(5)
 
@@ -126,5 +134,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
