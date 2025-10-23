@@ -1,4 +1,3 @@
-import os
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
@@ -99,8 +98,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # === Основной запуск ===
 def main():
+    import os
     app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
-
 
     conv = ConversationHandler(
     entry_points=[
@@ -122,4 +121,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
