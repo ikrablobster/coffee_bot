@@ -1,4 +1,5 @@
 import threading
+import os
 from flask import Flask
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import (
@@ -108,7 +109,6 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # === Основной запуск ===
 def main():
-    import os
     app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
 
     conv = ConversationHandler(
@@ -134,6 +134,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
